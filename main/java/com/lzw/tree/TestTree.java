@@ -2,7 +2,6 @@ package com.lzw.tree;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,14 +29,14 @@ public class TestTree {
             graph.insertPoint(node);
         }
         //添加线
-//        graph.insertLine(new Line(0, 1, "0001"));
-//        graph.insertLine(new Line(1, 2, "0001"));
-//        graph.insertLine(new Line(2, 3, "0001"));
-//        graph.insertLine(new Line(2, 4, "0001"));
-//        graph.insertLine(new Line(2, 5, "0001"));
-//        graph.insertLine(new Line(3, 6, "0001"));
-//        graph.insertLine(new Line(4, 6, "0001"));
-//        graph.insertLine(new Line(6, 7, "0001"));
+        graph.insertLine(new Line(0, 1, "0001"));
+        graph.insertLine(new Line(1, 2, "0001"));
+        graph.insertLine(new Line(2, 3, "0001"));
+        graph.insertLine(new Line(2, 4, "0001"));
+        graph.insertLine(new Line(2, 5, "0001"));
+        graph.insertLine(new Line(3, 6, "0001"));
+        graph.insertLine(new Line(4, 6, "0001"));
+        graph.insertLine(new Line(6, 7, "0001"));
 
         //打印图的邻接表
         graph.showGraph(graph);
@@ -53,12 +52,12 @@ class Graph {
     /**
      * 功能描述 二维数组保存所有的线
      */
-    Node[][] line;
+    String[][] line;
 
     public Graph(int n) {
         //n表示节点个数
         pointList = new ArrayList<Node>(n);
-        line = new Node[n][n];
+        line = new String[n][n];
     }
 
     /**
@@ -84,7 +83,7 @@ class Graph {
      * @date 2020/12/11
      */
     public void insertLine(Line lines) {
-
+            line[lines.getFrom()][lines.getTo()] = lines.getWith();
     }
     /**
      *功能描述 打印图的二维数组
@@ -94,10 +93,10 @@ class Graph {
      * @return void
      */
     public void showGraph(Graph graph) {
-//        String[][] line = graph.getLine();
-//        for (String[] strings : line) {
-//            System.out.println(Arrays.toString(strings));
-//        }
+        String[][] line = graph.getLine();
+        for (String[] strings : line) {
+            System.out.println(Arrays.toString(strings));
+        }
     }
 
 }
@@ -115,14 +114,15 @@ class Line {
     /**
      * 功能描述 线出发节点
      */
-    private Node from;
+    private int from;
     /**
      * 功能描述 线到达节点
      */
-    private Node to;
+    private int to;
     /**
      * 功能描述 线的权值
      */
     private String with;
 }
 //待修改内容   line的from和to的类型应该为node with就是树所带的条件
+//哪个纵列全是0 就是开始节点
