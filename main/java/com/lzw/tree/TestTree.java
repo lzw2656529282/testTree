@@ -1,7 +1,6 @@
 package com.lzw.tree;
 
 import cn.hutool.core.util.ReUtil;
-import com.sun.org.apache.xerces.internal.xs.StringList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,14 +17,14 @@ import java.util.List;
 public class TestTree {
     public static void main(String[] args) {
         List<Node> nodeList = new ArrayList<Node>();
-        Node node0 = new Node(0, "赋值1");
-        Node node1 = new Node(1, "赋值2");
-        Node node2 = new Node(2, "赋值3");
-        Node node3 = new Node(3, "赋值4");
-        Node node4 = new Node(4, "赋值5");
-        Node node5 = new Node(5, "赋值6");
-        Node node6 = new Node(6, "赋值7");
-        Node node7 = new Node(7, "赋值8");
+        Node node0 = new Node(0, "赋值0");
+        Node node1 = new Node(1, "赋值1");
+        Node node2 = new Node(2, "赋值2");
+        Node node3 = new Node(3, "赋值3");
+        Node node4 = new Node(4, "赋值4");
+        Node node5 = new Node(5, "赋值5");
+        Node node6 = new Node(6, "赋值6");
+        Node node7 = new Node(7, "赋值7");
         nodeList.add(node0);
         nodeList.add(node1);
         nodeList.add(node2);
@@ -44,20 +43,29 @@ public class TestTree {
         graph.insertLine(new Line(node0, node1, "0001"));
         graph.insertLine(new Line(node1, node2, "0001"));
         graph.insertLine(new Line(node2, node3, "0001"));
-        graph.insertLine(new Line(node2, node4, "0001"));
-        graph.insertLine(new Line(node2, node5, "0001"));
+        graph.insertLine(new Line(node2, node4, "0002"));
+        graph.insertLine(new Line(node2, node5, "0003"));
         graph.insertLine(new Line(node3, node6, "0001"));
         graph.insertLine(new Line(node4, node6, "0001"));
         graph.insertLine(new Line(node6, node7, "0001"));
 
         //打印图的邻接表
         graph.showGraph(graph);
-        System.out.println("==============================================");
+        System.out.println("==============================================>");
         //找到开始节点
         System.out.println(graph.getBegin(graph));
-        System.out.println("==============================================");
+        System.out.println("==============================================>");
         //判断是否存在孤立节点
         System.out.println(graph.isolated(graph.getLineList(), graph.getPointList()));
+        System.out.println("==============================================>");
+        //获取所有的终止节点
+        System.out.println(graph.getEndNode(graph));
+        System.out.println("==============================================>");
+        //获取树的下一个节点
+        System.out.println(graph.getTreeNextNode(graph, node2, "0003"));
+        System.out.println("==============================================>");
+        //获取赋值的下个节点
+        System.out.println(graph.getAssignmentNextNode(graph, node2));
     }
 }
 
@@ -192,7 +200,67 @@ class Graph {
         }
         return true;
     }
-//一行全是0的就是结束节点
+    //一行全是0的就是结束节点，也就是衍生变量
+    public List<Node> getEndNode(Graph graph){
+        String regex = "[null]*";
+        List<Node> list = new ArrayList<Node>();
+        ArrayList<Line> lineList = graph.getLineList();
+        String[][] strings = graph.lineToString(lineList);
+        for (int i = 0; i < strings.length; i++) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int j = 0; j < strings[i].length; j++) {
+                stringBuilder.append(strings[i][j]);
+            }
+            //判断该stringBuilder是否全是null
+            if (ReUtil.isMatch(regex, stringBuilder.toString())) {
+                //i为节点id,根据id获取节点
+                list.add(getNodeById(graph,i));
+            }
+        }
+        return list;
+    }
+    /**
+     *功能描述  树节点获取该节点的下一个节点
+     * @author liuzhenwei
+     * @date 2020/12/15
+     * @param graph  图
+     * @param node  树节点
+     * @param with  条件
+     * @return com.lzw.tree.Node
+     */
+    public Node getTreeNextNode(Graph graph,Node node,String with){
+        //根据树节点的条件 with 选择下一个节点
+        String[][] strings = graph.lineToString(graph.getLineList());
+        int id = node.getId();
+        for (int i = 0; i < strings.length; i++) {
+            //取出当前id行的数据
+            String s = strings[id][i];
+            if(null != s){
+                if(s.equals(with)){
+                    //i 为下个目标节点的id
+                    return  graph.getNodeById(graph,i);
+                }
+            }
+        }
+        return null;
+    }
+    /**
+     *功能描述 获取赋值的下一个节点
+     * @author liuzhenwei
+     * @date 2020/12/15
+     * @param graph, node
+     * @return com.lzw.tree.Node
+     */
+    public Node getAssignmentNextNode(Graph graph, Node node) {
+        String[][] strings = graph.lineToString(graph.getLineList());
+        int id = node.getId();
+        for (int i = 0; i < strings[id].length; i++) {
+            if(null != strings[id][i]){
+                return graph.getNodeById(graph,i);
+            }
+        }
+        return null;
+    }
 }
 
 @Data
