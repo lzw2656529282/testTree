@@ -200,7 +200,13 @@ class Graph {
         }
         return true;
     }
-    //一行全是0的就是结束节点，也就是衍生变量
+    /**
+     *功能描述  一行全是0的就是结束节点
+     * @author liuzhenwei
+     * @date 2020/12/15
+     * @param  graph
+     * @return  List<Node>
+     */
     public List<Node> getEndNode(Graph graph){
         String regex = "[null]*";
         List<Node> list = new ArrayList<Node>();
